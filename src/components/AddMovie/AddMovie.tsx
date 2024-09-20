@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-const AddMovie = ({ addMovie }) => {
+interface AddMovieProps {
+  addMovie: (title: string, imageUrl: string) => void;
+}
+
+const AddMovie = ({ addMovie }: AddMovieProps) => {
   const [title, setTitle] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!title || !imageUrl) {
       setError('Пожалуйста, заполните все поля.');
