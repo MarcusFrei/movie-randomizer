@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MovieList from './components/MovieList/MovieList';
-import AddMovie from './components/AddMovie/AddMovie';
-import EditMovie from './components/EditMovie/EditMovie';
+import MovieForm from './components/MovieForm/MovieForm';
 import RandomMovie from './components/RandomMovie/RandomMovie';
 import WatchedMovies from './components/WatchedMovies/WatchedMovies';
 import NavBar from './components/NavBar/NavBar';
@@ -11,7 +10,7 @@ import './App.css';
 interface Movie {
   id: number;
   title: string;
-  imageUrl?: string;
+  imageUrl: string;
   watched: boolean;
 }
 
@@ -32,7 +31,7 @@ const App: React.FC = () => {
     }
   }, [movies]);
 
-  const addMovie = (title: string, imageUrl?: string) => {
+  const addMovie = (title: string, imageUrl: string) => {
     const newMovie: Movie = {
       id: movies.length + 1,
       title,
@@ -57,7 +56,7 @@ const App: React.FC = () => {
     }
   };
 
-  const updateMovie = (id: number, title: string, imageUrl?: string) => {
+  const updateMovie = (id: number, title: string, imageUrl: string) => {
     setMovies(
       movies.map((movie) =>
         movie.id === id ? { ...movie, title, imageUrl } : movie
@@ -84,9 +83,15 @@ const App: React.FC = () => {
                   movies={movies.filter((movie) => !movie.watched)}
                 />
                 {editingMovie ? (
-                  <EditMovie movie={editingMovie} updateMovie={updateMovie} />
+                  <MovieForm
+                    initialMovie={editingMovie}
+                    onSubmit={(title, imageUrl) =>
+                      updateMovie(editingMovie!.id, title, imageUrl)
+                    }
+                    buttonText="Обновить"
+                  />
                 ) : (
-                  <AddMovie addMovie={addMovie} />
+                  <MovieForm onSubmit={addMovie} buttonText="Добавить" />
                 )}
                 <MovieList
                   movies={movies.filter((movie) => !movie.watched)}
