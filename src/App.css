@@ -76,7 +76,6 @@ li:last-child {
 }
 
 .watched {
-  text-decoration: line-through;
   color: #888;
 }
 

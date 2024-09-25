@@ -6,15 +6,9 @@ import RandomMovie from './components/RandomMovie/RandomMovie';
 import WatchedMovies from './components/WatchedMovies/WatchedMovies';
 import NavBar from './components/NavBar/NavBar';
 import './App.css';
+import { Movie } from './types';
 
-interface Movie {
-  id: number;
-  title: string;
-  imageUrl: string;
-  watched: boolean;
-}
-
-const App: React.FC = () => {
+export const App: React.FC = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
 

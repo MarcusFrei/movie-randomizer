@@ -1,15 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Movie } from '../../types';
 
 interface MovieFormProps {
   initialMovie?: Movie;
   onSubmit: (title: string, imageUrl: string) => void;
   buttonText: string;
-}
-
-interface Movie {
-  id?: number;
-  title: string;
-  imageUrl: string;
 }
 
 const MovieForm: React.FC<MovieFormProps> = ({

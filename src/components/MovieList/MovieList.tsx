@@ -1,11 +1,6 @@
 import React from 'react';
-
-interface Movie {
-  id: number;
-  title: string;
-  imageUrl?: string;
-  watched: boolean;
-}
+import { Movie } from '../../types';
+import MovieCard from '../MovieCard/MovieCard';
 
 interface MovieListProps {
   movies: Movie[];
@@ -20,18 +15,24 @@ const MovieList: React.FC<MovieListProps> = ({
   editMovie,
   deleteMovie,
 }) => {
+  const buttonActions = [
+    { text: 'Просмотрено', onClick: toggleWatched },
+    { text: 'Редактировать', onClick: editMovie },
+    { text: 'Удалить', onClick: deleteMovie },
+  ];
+
+  /// В массиве movies мы фильтруем дубликаты, используя метод filter с проверкой через findIndex, чтобы каждый id был уникальным
+
+  const uniqueMovies = movies.filter(
+    (movie, index, self) => index === self.findIndex((m) => m.id === movie.id)
+  );
+
   return (
     <div>
       <h2>Великий список Анансьи и Марка:</h2>
       <ul>
-        {movies.map((movie) => (
-          <li key={movie.id} className={movie.watched ? 'watched' : ''}>
-            <p>{movie.title}</p>
-            {movie.imageUrl && <img src={movie.imageUrl} alt={movie.title} />}
-            <button onClick={() => toggleWatched(movie.id)}>Просмотрено</button>
-            <button onClick={() => editMovie(movie.id)}>Редактировать</button>
-            <button onClick={() => deleteMovie(movie.id)}>Удалить</button>
-          </li>
+        {uniqueMovies.map((movie) => (
+          <MovieCard key={movie.id} movie={movie} actions={buttonActions} />
         ))}
       </ul>
     </div>
@@ -39,3 +40,10 @@ const MovieList: React.FC<MovieListProps> = ({
 };
 
 export default MovieList;
+
+/// Сделать отдельный компонент карточки - сделано!
+/// Типизировать WatchedMovies, а то не сделано! - сделано!
+/// https://www.typescriptlang.org/docs/handbook/utility-types.html - читать ОБЯЗАТЕЛЬНО!!!
+/// Избавится от повторов айдишников - сделано!
+/// Комментарии в самом коде, что исправил и тд
+/// Убрать лямбды строчка 44 (onClick) - сделано!

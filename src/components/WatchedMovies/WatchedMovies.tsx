@@ -1,7 +1,18 @@
 import React from 'react';
+import { Movie } from '../../types';
+import MovieCard from '../MovieCard/MovieCard';
 
-const WatchedMovies = ({ movies, toggleWatched }) => {
+interface WatchedMoviesProps {
+  movies: Movie[];
+  toggleWatched: (id: number) => void;
+}
+
+const WatchedMovies: React.FC<WatchedMoviesProps> = ({
+  movies,
+  toggleWatched,
+}) => {
   const watchedMovies = movies.filter((movie) => movie.watched);
+  const buttonActions = [{ text: 'Вернуть в список', onClick: toggleWatched }];
 
   return (
     <div>
@@ -11,13 +22,7 @@ const WatchedMovies = ({ movies, toggleWatched }) => {
       ) : (
         <ul>
           {watchedMovies.map((movie) => (
-            <li key={movie.id}>
-              <p>{movie.title}</p>
-              {movie.imageUrl && <img src={movie.imageUrl} alt={movie.title} />}
-              <button onClick={() => toggleWatched(movie.id)}>
-                Вернуть в список
-              </button>
-            </li>
+            <MovieCard key={movie.id} movie={movie} actions={buttonActions} />
           ))}
         </ul>
       )}
