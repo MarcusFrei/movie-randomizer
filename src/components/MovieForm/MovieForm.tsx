@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Movie } from '../../types';
+import './MovieForm.css';
 
 interface MovieFormProps {
   initialMovie?: Movie;
@@ -26,7 +27,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!title || !imageUrl) {
-      setError('Пожалуйста, заполните все поля.');
+      setError('Пожалуйста, заполните все поля!');
       return;
     }
     onSubmit(title, imageUrl);
@@ -41,7 +42,7 @@ const MovieForm: React.FC<MovieFormProps> = ({
         type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        placeholder="Название фильма / сериала"
+        placeholder="Название фильма / сериала..."
       />
       <input
         type="text"
@@ -49,10 +50,14 @@ const MovieForm: React.FC<MovieFormProps> = ({
         onChange={(e) => setImageUrl(e.target.value)}
         placeholder="Ссылка на постер"
       />
-      <button type="submit">{buttonText}</button>
+      <button type="submit" className="add">
+        {buttonText}
+      </button>
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </form>
   );
 };
 
 export default MovieForm;
+
+/// Посмотреть апи форм в JS, чтобы оптимизировать код

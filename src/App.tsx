@@ -4,6 +4,7 @@ import MovieList from './components/MovieList/MovieList';
 import MovieForm from './components/MovieForm/MovieForm';
 import RandomMovie from './components/RandomMovie/RandomMovie';
 import WatchedMovies from './components/WatchedMovies/WatchedMovies';
+import Modal from './components/Modal/Modal';
 import NavBar from './components/NavBar/NavBar';
 import './App.css';
 import { Movie } from './types';
@@ -11,6 +12,7 @@ import { Movie } from './types';
 export const App: React.FC = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const storedMovies = localStorage.getItem('movies');
@@ -33,6 +35,7 @@ export const App: React.FC = () => {
       imageUrl,
     };
     setMovies([...movies, newMovie]);
+    setIsModalOpen(false);
   };
 
   const toggleWatched = (id: number) => {
@@ -47,6 +50,7 @@ export const App: React.FC = () => {
     const movie = movies.find((movie) => movie.id === id);
     if (movie) {
       setEditingMovie(movie);
+      setIsModalOpen(true);
     }
   };
 
@@ -57,6 +61,7 @@ export const App: React.FC = () => {
       )
     );
     setEditingMovie(null);
+    setIsModalOpen(false);
   };
 
   const deleteMovie = (id: number) => {
@@ -67,32 +72,42 @@ export const App: React.FC = () => {
     <Router>
       <div className="container">
         <NavBar />
+
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <MovieForm
+            initialMovie={editingMovie}
+            onSubmit={(title, imageUrl) =>
+              editingMovie
+                ? updateMovie(editingMovie.id, title, imageUrl)
+                : addMovie(title, imageUrl)
+            }
+            buttonText={editingMovie ? 'Обновить' : 'Добавить'}
+          />
+        </Modal>
+
         <Routes>
           <Route
             path="/"
             element={
               <>
-                <h1>Рандомайзер фильмов</h1>
-                <RandomMovie
-                  movies={movies.filter((movie) => !movie.watched)}
-                />
-                {editingMovie ? (
-                  <MovieForm
-                    initialMovie={editingMovie}
-                    onSubmit={(title, imageUrl) =>
-                      updateMovie(editingMovie!.id, title, imageUrl)
-                    }
-                    buttonText="Обновить"
-                  />
-                ) : (
-                  <MovieForm onSubmit={addMovie} buttonText="Добавить" />
-                )}
+                <h1>Великий список Ананасьи и Марка:</h1>
                 <MovieList
                   movies={movies.filter((movie) => !movie.watched)}
                   toggleWatched={toggleWatched}
                   editMovie={editMovie}
                   deleteMovie={deleteMovie}
                 />
+                <div className="button_block">
+                  <button
+                    onClick={() => {
+                      setEditingMovie(null); // Очищаем состояние редактируемого фильма для добавления нового
+                      setIsModalOpen(true);
+                    }}
+                    className="add_button"
+                  >
+                    ➕
+                  </button>
+                </div>
               </>
             }
           />
@@ -100,6 +115,12 @@ export const App: React.FC = () => {
             path="/watched"
             element={
               <WatchedMovies movies={movies} toggleWatched={toggleWatched} />
+            }
+          />
+          <Route
+            path="/random"
+            element={
+              <RandomMovie movies={movies.filter((movie) => !movie.watched)} />
             }
           />
         </Routes>

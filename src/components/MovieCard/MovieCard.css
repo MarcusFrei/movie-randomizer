@@ -1,0 +1,15 @@
+.card_buttons {
+  display: flex;
+  max-width: 220px;
+}
+
+.card_li {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  align-items: center;
+  max-width: min-content;
+  height: 320px;
+  justify-content: flex-end;
+}

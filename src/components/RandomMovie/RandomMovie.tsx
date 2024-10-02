@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
+import { Movie } from '../../types';
 
-const RandomMovie = ({ movies }) => {
-  const [randomMovie, setRandomMovie] = useState('');
+interface RandomMovieProps {
+  movies: Movie[];
+}
+
+const RandomMovie: React.FC<RandomMovieProps> = ({ movies }) => {
+  const [randomMovie, setRandomMovie] = useState<string>('');
 
   const getRandomMovie = () => {
     const unwatchedMovies = movies.filter((movie) => !movie.watched);
-    if (unwatchedMovies.length === 0) return 'Нет фильмов для просмотра ;(';
+    if (unwatchedMovies.length === 0) {
+      setRandomMovie(' фильмов для просмотра ;(');
+      return;
+    }
     const randomIndex = Math.floor(Math.random() * unwatchedMovies.length);
     setRandomMovie(unwatchedMovies[randomIndex].title);
   };
@@ -14,7 +22,9 @@ const RandomMovie = ({ movies }) => {
     <div>
       <h2>Случайный фильм / сериал:</h2>
       <div className="random">
-        <p>{randomMovie || 'Нажми, чтобы узнать следущий случайный сериал!'}</p>
+        <p>
+          {randomMovie || 'Нажми, чтобы узнать следующий случайный сериал!'}
+        </p>
         <button onClick={getRandomMovie}>Нажми</button>
       </div>
     </div>
