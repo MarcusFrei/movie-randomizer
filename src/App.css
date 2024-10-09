@@ -41,7 +41,7 @@ h2 {
 }
 
 button {
-  background-color: #c8a2c8;
+  background-color: rgb(74, 146, 217);
   border: 1px solid black;
   color: white;
   border: none;
@@ -53,7 +53,7 @@ button {
 }
 
 button:hover {
-  background-color: #9b759b;
+  background-color: rgb(65, 120, 175);
 }
 
 input[type='text'] {

@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import MovieList from './components/MovieList/MovieList';
+import MovieComponent from './components/MovieComponent/MovieComponent';
 import MovieForm from './components/MovieForm/MovieForm';
 import RandomMovie from './components/RandomMovie/RandomMovie';
-import WatchedMovies from './components/WatchedMovies/WatchedMovies';
 import Modal from './components/Modal/Modal';
 import NavBar from './components/NavBar/NavBar';
 import './App.css';
@@ -90,17 +89,17 @@ export const App: React.FC = () => {
             path="/"
             element={
               <>
-                <h1>Великий список Ананасьи и Марка:</h1>
-                <MovieList
-                  movies={movies.filter((movie) => !movie.watched)}
+                <MovieComponent
+                  movies={movies}
                   toggleWatched={toggleWatched}
                   editMovie={editMovie}
                   deleteMovie={deleteMovie}
+                  mode="list"
                 />
                 <div className="button_block">
                   <button
                     onClick={() => {
-                      setEditingMovie(null); // Очищаем состояние редактируемого фильма для добавления нового
+                      setEditingMovie(null);
                       setIsModalOpen(true);
                     }}
                     className="add_button"
@@ -114,7 +113,11 @@ export const App: React.FC = () => {
           <Route
             path="/watched"
             element={
-              <WatchedMovies movies={movies} toggleWatched={toggleWatched} />
+              <MovieComponent
+                movies={movies}
+                toggleWatched={toggleWatched}
+                mode="watched"
+              />
             }
           />
           <Route

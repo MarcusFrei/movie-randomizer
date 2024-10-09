@@ -15,11 +15,12 @@
 
 a {
   font-weight: 500;
-  color: #c8a2c8;
+  color: rgb(74, 146, 217);
   text-decoration: inherit;
+  font-size: 18px;
 }
 a:hover {
-  color: #9b759b;
+  color: rgb(65, 120, 175);
   font-weight: 600;
 }
 
@@ -58,7 +59,7 @@ button:focus-visible {
     background-color: #ffffff;
   }
   a:hover {
-    color: #9b759b;
+    color: rgb(65, 120, 175);
     text-decoration: underline;
   }
 }
