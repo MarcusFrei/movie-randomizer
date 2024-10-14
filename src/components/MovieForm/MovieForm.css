@@ -1,3 +1,11 @@
 .add {
   margin: 0;
 }
+
+.error-message {
+  text-align: left;
+  font-size: 14px;
+  margin: 0 auto 5px;
+  text-decoration: underline;
+  color: red;
+}

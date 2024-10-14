@@ -13,51 +13,84 @@ const MovieForm: React.FC<MovieFormProps> = ({
   onSubmit,
   buttonText,
 }) => {
-  const [title, setTitle] = useState(initialMovie?.title || '');
-  const [imageUrl, setImageUrl] = useState(initialMovie?.imageUrl || '');
-  const [error, setError] = useState('');
+  const [formState, setFormState] = useState({
+    title: initialMovie?.title || '',
+    imageUrl: initialMovie?.imageUrl || '',
+  });
+
+  const [errors, setErrors] = useState({
+    title: '',
+    imageUrl: '',
+  });
 
   useEffect(() => {
     if (initialMovie) {
-      setTitle(initialMovie.title);
-      setImageUrl(initialMovie.imageUrl);
+      setFormState({
+        title: initialMovie.title,
+        imageUrl: initialMovie.imageUrl,
+      });
     }
   }, [initialMovie]);
 
+  const validateForm = () => {
+    const newErrors = { title: '', imageUrl: '' };
+
+    if (!formState.title) {
+      newErrors.title = 'Поле название - обязательно!';
+    }
+
+    if (!formState.imageUrl) {
+      newErrors.imageUrl = 'Поле ссылки - обязательно!';
+    }
+
+    setErrors(newErrors);
+
+    return !newErrors.title && !newErrors.imageUrl;
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormState((prevState) => ({ ...prevState, [name]: value }));
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!title || !imageUrl) {
-      setError('Пожалуйста, заполните все поля!');
-      return;
+    if (validateForm()) {
+      onSubmit(formState.title, formState.imageUrl);
+      setFormState({ title: '', imageUrl: '' });
+      setErrors({ title: '', imageUrl: '' });
     }
-    onSubmit(title, imageUrl);
-    setTitle('');
-    setImageUrl('');
-    setError('');
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Название фильма / сериала..."
-      />
-      <input
-        type="text"
-        value={imageUrl}
-        onChange={(e) => setImageUrl(e.target.value)}
-        placeholder="Ссылка на постер"
-      />
+      <div>
+        <input
+          type="text"
+          name="title"
+          value={formState.title}
+          onChange={handleChange}
+          placeholder="Название фильма / сериала..."
+        />
+        {errors.title && <p className="error-message">{errors.title}</p>}
+      </div>
+
+      <div>
+        <input
+          type="text"
+          name="imageUrl"
+          value={formState.imageUrl}
+          onChange={handleChange}
+          placeholder="Ссылка на постер"
+        />
+        {errors.imageUrl && <p className="error-message">{errors.imageUrl}</p>}
+      </div>
+
       <button type="submit" className="add">
         {buttonText}
       </button>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
     </form>
   );
 };
 
 export default MovieForm;
-
-/// Посмотреть апи форм в JS, чтобы оптимизировать код
