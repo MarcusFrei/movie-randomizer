@@ -1,134 +1,94 @@
-import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useMovieManager } from './components/MovieManager/MovieManager';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import MovieComponent from './components/MovieComponent/MovieComponent';
 import MovieForm from './components/MovieForm/MovieForm';
 import RandomMovie from './components/RandomMovie/RandomMovie';
 import Modal from './components/Modal/Modal';
+import MovieDetails from './components/MovieDetails/MovieDetails';
 import NavBar from './components/NavBar/NavBar';
 import './App.css';
-import { Movie } from './types';
 
 export const App: React.FC = () => {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const {
+    movies,
+    editingMovie,
+    isModalOpen,
+    addMovie,
+    toggleWatched,
+    editMovie,
+    updateMovie,
+    deleteMovie,
+    setIsModalOpen,
+  } = useMovieManager();
 
-  useEffect(() => {
-    const storedMovies = localStorage.getItem('movies');
-    if (storedMovies) {
-      setMovies(JSON.parse(storedMovies));
-    }
-  }, []);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (movies.length > 0) {
-      localStorage.setItem('movies', JSON.stringify(movies));
-    }
-  }, [movies]);
-
-  const addMovie = (title: string, imageUrl: string) => {
-    const newMovie: Movie = {
-      id: movies.length + 1,
-      title,
-      watched: false,
-      imageUrl,
-    };
-    setMovies([...movies, newMovie]);
-    setIsModalOpen(false);
-  };
-
-  const toggleWatched = (id: number) => {
-    setMovies(
-      movies.map((movie) =>
-        movie.id === id ? { ...movie, watched: !movie.watched } : movie
-      )
-    );
-  };
-
-  const editMovie = (id: number) => {
-    const movie = movies.find((movie) => movie.id === id);
-    if (movie) {
-      setEditingMovie(movie);
-      setIsModalOpen(true);
-    }
-  };
-
-  const updateMovie = (id: number, title: string, imageUrl: string) => {
-    setMovies(
-      movies.map((movie) =>
-        movie.id === id ? { ...movie, title, imageUrl } : movie
-      )
-    );
-    setEditingMovie(null);
-    setIsModalOpen(false);
-  };
-
-  const deleteMovie = (id: number) => {
-    setMovies(movies.filter((movie) => movie.id !== id));
+  const handleImageClick = (id: number) => {
+    navigate(`/movie/${id}`);
   };
 
   return (
-    <Router>
-      <div className="container">
-        <NavBar />
+    <div className="container">
+      <NavBar />
 
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-          <MovieForm
-            initialMovie={editingMovie}
-            onSubmit={(title, imageUrl) =>
-              editingMovie
-                ? updateMovie(editingMovie.id, title, imageUrl)
-                : addMovie(title, imageUrl)
-            }
-            buttonText={editingMovie ? 'Обновить' : 'Добавить'}
-          />
-        </Modal>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <MovieForm
+          initialMovie={editingMovie}
+          onSubmit={(title, imageUrl, type) =>
+            editingMovie
+              ? updateMovie(editingMovie.id, title, imageUrl, type)
+              : addMovie(title, imageUrl, type)
+          }
+          buttonText={editingMovie ? 'Обновить' : 'Добавить'}
+        />
+      </Modal>
 
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <MovieComponent
-                  movies={movies}
-                  toggleWatched={toggleWatched}
-                  editMovie={editMovie}
-                  deleteMovie={deleteMovie}
-                  mode="list"
-                />
-                <div className="button_block">
-                  <button
-                    onClick={() => {
-                      setEditingMovie(null);
-                      setIsModalOpen(true);
-                    }}
-                    className="add_button"
-                  >
-                    ➕
-                  </button>
-                </div>
-              </>
-            }
-          />
-          <Route
-            path="/watched"
-            element={
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
               <MovieComponent
                 movies={movies}
                 toggleWatched={toggleWatched}
-                mode="watched"
+                editMovie={editMovie}
+                deleteMovie={deleteMovie}
+                mode="list"
+                onImageClick={handleImageClick} // Передаем onImageClick
               />
-            }
-          />
-          <Route
-            path="/random"
-            element={
-              <RandomMovie movies={movies.filter((movie) => !movie.watched)} />
-            }
-          />
-        </Routes>
-      </div>
-    </Router>
+              <div className="button_block">
+                <button
+                  onClick={() => {
+                    setIsModalOpen(true);
+                  }}
+                  className="add_button"
+                >
+                  ➕
+                </button>
+              </div>
+            </>
+          }
+        />
+        <Route
+          path="/watched"
+          element={
+            <MovieComponent
+              movies={movies}
+              toggleWatched={toggleWatched}
+              mode="watched"
+              onImageClick={handleImageClick} // Передаем onImageClick
+            />
+          }
+        />
+        <Route
+          path="/random"
+          element={
+            <RandomMovie movies={movies.filter((movie) => !movie.watched)} />
+          }
+        />
+        <Route path="/movie/:id" element={<MovieDetails movies={movies} />} />
+      </Routes>
+    </div>
   );
 };
 

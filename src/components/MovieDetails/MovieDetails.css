@@ -1,0 +1,53 @@
+.movie-details {
+  padding: 20px;
+}
+
+.movie-header {
+  display: flex;
+  align-items: center;
+}
+
+.movie-image {
+  width: 150px; /* Укажите нужный размер изображения */
+  height: auto;
+  margin-right: 20px;
+  border-radius: 8px; /* Скругление изображения */
+}
+
+.movie-info h1 {
+  margin: 0;
+}
+
+.season-form {
+  margin: 20px 0;
+}
+
+.squares-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.square {
+  width: 30px; /* Размер квадратика */
+  height: 30px;
+  margin: 4px; /* Отступ между квадратиками */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(74, 146, 217);
+  border-radius: 8px; /* Скругление квадратов */
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.square.watched {
+  background-color: #646cff; /* Цвет для просмотренных серий */
+}
+
+.season-actions {
+  margin-top: 10px;
+}
+
+.season-actions button {
+  margin-right: 10px; /* Отступ между кнопками */
+}

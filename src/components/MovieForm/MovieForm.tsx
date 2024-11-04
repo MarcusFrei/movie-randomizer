@@ -4,8 +4,19 @@ import './MovieForm.css';
 
 interface MovieFormProps {
   initialMovie?: Movie;
-  onSubmit: (title: string, imageUrl: string) => void;
+  onSubmit: (title: string, imageUrl: string, type: 'movie' | 'series') => void;
   buttonText: string;
+}
+
+interface FormState {
+  title: string;
+  imageUrl: string;
+  type: 'movie' | 'series';
+}
+
+interface FormErrors {
+  title: string;
+  imageUrl: string;
 }
 
 const MovieForm: React.FC<MovieFormProps> = ({
@@ -13,12 +24,13 @@ const MovieForm: React.FC<MovieFormProps> = ({
   onSubmit,
   buttonText,
 }) => {
-  const [formState, setFormState] = useState({
+  const [formState, setFormState] = useState<FormState>({
     title: initialMovie?.title || '',
     imageUrl: initialMovie?.imageUrl || '',
+    type: initialMovie?.type || 'movie',
   });
 
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<FormErrors>({
     title: '',
     imageUrl: '',
   });
@@ -28,12 +40,13 @@ const MovieForm: React.FC<MovieFormProps> = ({
       setFormState({
         title: initialMovie.title,
         imageUrl: initialMovie.imageUrl,
+        type: initialMovie.type,
       });
     }
   }, [initialMovie]);
 
   const validateForm = () => {
-    const newErrors = { title: '', imageUrl: '' };
+    const newErrors: FormErrors = { title: '', imageUrl: '' };
 
     if (!formState.title) {
       newErrors.title = 'Поле название - обязательно!';
@@ -48,7 +61,9 @@ const MovieForm: React.FC<MovieFormProps> = ({
     return !newErrors.title && !newErrors.imageUrl;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormState((prevState) => ({ ...prevState, [name]: value }));
   };
@@ -56,8 +71,8 @@ const MovieForm: React.FC<MovieFormProps> = ({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validateForm()) {
-      onSubmit(formState.title, formState.imageUrl);
-      setFormState({ title: '', imageUrl: '' });
+      onSubmit(formState.title, formState.imageUrl, formState.type);
+      setFormState({ title: '', imageUrl: '', type: 'movie' });
       setErrors({ title: '', imageUrl: '' });
     }
   };
@@ -84,6 +99,18 @@ const MovieForm: React.FC<MovieFormProps> = ({
           placeholder="Ссылка на постер"
         />
         {errors.imageUrl && <p className="error-message">{errors.imageUrl}</p>}
+      </div>
+
+      <div>
+        <select
+          className="type"
+          name="type"
+          value={formState.type}
+          onChange={handleChange}
+        >
+          <option value="movie">Фильм</option>
+          <option value="series">Сериал</option>
+        </select>
       </div>
 
       <button type="submit" className="add">

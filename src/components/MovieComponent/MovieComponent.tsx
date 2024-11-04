@@ -8,6 +8,7 @@ interface MovieComponentProps {
   editMovie?: (id: number) => void;
   deleteMovie?: (id: number) => void;
   mode: 'watched' | 'list';
+  onImageClick?: (id: number) => void;
 }
 
 const MovieComponent: React.FC<MovieComponentProps> = ({
@@ -16,6 +17,7 @@ const MovieComponent: React.FC<MovieComponentProps> = ({
   editMovie,
   deleteMovie,
   mode,
+  onImageClick,
 }) => {
   const isWatchedMode = mode === 'watched';
 
@@ -69,6 +71,9 @@ const MovieComponent: React.FC<MovieComponentProps> = ({
               key={movie.id}
               movie={movie}
               actions={buttonActions(movie.id)}
+              onImageClick={
+                onImageClick ? () => onImageClick(movie.id) : undefined
+              }
             />
           ))}
         </ul>

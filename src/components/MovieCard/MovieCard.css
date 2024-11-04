@@ -13,3 +13,7 @@
   height: 320px;
   justify-content: flex-end;
 }
+
+img {
+  cursor: pointer;
+}

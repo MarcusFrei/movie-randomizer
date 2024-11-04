@@ -4,27 +4,31 @@ import './MovieCard.css';
 interface MovieCardProps {
   movie: Movie;
   actions: { text: string; onClick: (id: number) => void }[];
+  onImageClick: (movie: Movie) => void;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ movie, actions }) => {
-  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const buttonId = event.currentTarget.id.split('__')[0];
-    const findAction = actions.find((action) => action.text === buttonId);
-    if (findAction) {
-      findAction.onClick(movie.id);
-    }
-  };
-
+const MovieCard: React.FC<MovieCardProps> = ({
+  movie,
+  actions,
+  onImageClick,
+}) => {
   return (
     <li className={`${movie.watched ? 'watched' : ''} card_li`}>
       <p>{movie.title}</p>
-      {movie.imageUrl && <img src={movie.imageUrl} alt={movie.title} />}
+      {movie.imageUrl && (
+        <img
+          src={movie.imageUrl}
+          alt={movie.title}
+          onClick={() => onImageClick(movie)}
+        />
+      )}
       <div className="card_buttons">
         {actions.map(({ text }) => (
           <button
             key={text}
-            onClick={handleButtonClick}
-            id={`${text}__${movie.id}`}
+            onClick={() =>
+              actions.find((action) => action.text === text)?.onClick(movie.id)
+            }
           >
             {text}
           </button>
