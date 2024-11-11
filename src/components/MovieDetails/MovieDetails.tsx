@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Movie, Square, Season } from '../../types';
+import { Movie, Season } from '../../types';
+import createSquares from '../../utils/utils';
 import './MovieDetails.css';
 
 interface MovieDetailsProps {
@@ -12,16 +13,11 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movies }) => {
   const movieId = Number(id);
   const movie = movies.find((m) => m.id === movieId);
 
-  // Состояние для сезонов
+  /// Состояние для сезонов
+
   const [seriesCount, setSeriesCount] = useState<string>('');
   const [seasons, setSeasons] = useState<Season[]>([]);
   const [editingSeason, setEditingSeason] = useState<Season | null>(null);
-
-  const createSquares = (count: number): Square[] =>
-    Array.from({ length: count }, (_, index) => ({
-      id: index + 1,
-      isWatched: false,
-    }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,27 +31,58 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movies }) => {
     }
   };
 
-  const addSeason = (seriesCount: number) => {
+  // const addSeason = (seriesCount: number) => {
+  //   const newSeason: Season = {
+  //     id: seasons.length + 1,
+  //     seriesCount,
+  //     episodes: createSquares(seriesCount),
+  //   };
+  //   const updatedSeasons = [...seasons, newSeason];
+  //   setSeasons(updatedSeasons);
+  //   saveSeasonsToLocalStorage(updatedSeasons);
+  // };
+
+  // const updateSeason = (seasonId: number, seriesCount: number) => {
+  //   const updatedSeasons = seasons.map((season) =>
+  //     season.id === seasonId
+  //       ? { ...season, seriesCount, episodes: createSquares(seriesCount) }
+  //       : season
+  //   );
+  //   setSeasons(updatedSeasons);
+  //   saveSeasonsToLocalStorage(updatedSeasons);
+  //   setEditingSeason(null);
+  // };
+
+  /////
+
+  const createOrUpdateSeason = (
+    seasonId: number | null,
+    seriesCount: number
+  ) => {
     const newSeason: Season = {
-      id: seasons.length + 1,
+      id: seasonId ?? seasons.length + 1,
       seriesCount,
       episodes: createSquares(seriesCount),
     };
-    const updatedSeasons = [...seasons, newSeason];
+
+    const updatedSeasons = seasonId
+      ? seasons.map((season) => (season.id === seasonId ? newSeason : season))
+      : [...seasons, newSeason];
+
     setSeasons(updatedSeasons);
-    saveSeasonsToLocalStorage(updatedSeasons); // Сохранение в LocalStorage
+    saveSeasonsToLocalStorage(updatedSeasons);
+    if (seasonId) setEditingSeason(null);
+  };
+
+  const addSeason = (seriesCount: number) => {
+    createOrUpdateSeason(null, seriesCount);
   };
 
   const updateSeason = (seasonId: number, seriesCount: number) => {
-    const updatedSeasons = seasons.map((season) =>
-      season.id === seasonId
-        ? { ...season, seriesCount, episodes: createSquares(seriesCount) }
-        : season
-    );
-    setSeasons(updatedSeasons);
-    saveSeasonsToLocalStorage(updatedSeasons); // Сохранение в LocalStorage
-    setEditingSeason(null);
+    createOrUpdateSeason(seasonId, seriesCount);
   };
+
+  /////////////////
 
   const handleSquareClick = (seasonId: number, squareId: number) => {
     const updatedSeasons = seasons.map((season) =>
@@ -72,7 +99,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movies }) => {
     );
 
     setSeasons(updatedSeasons);
-    saveSeasonsToLocalStorage(updatedSeasons); // Сохраняем обновленное состояние в LocalStorage
+    saveSeasonsToLocalStorage(updatedSeasons);
   };
 
   const handleEditSeason = (season: Season) => {
@@ -83,22 +110,19 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movies }) => {
   const handleDeleteSeason = (seasonId: number) => {
     const updatedSeasons = seasons.filter((season) => season.id !== seasonId);
 
-    // Переопределяем идентификаторы оставшихся сезонов
     const renumberedSeasons = updatedSeasons.map((season, index) => ({
       ...season,
-      id: index + 1, // Новый ID начинается с 1
+      id: index + 1,
     }));
 
     setSeasons(renumberedSeasons);
-    saveSeasonsToLocalStorage(renumberedSeasons); // Сохраняем в LocalStorage
+    saveSeasonsToLocalStorage(renumberedSeasons);
   };
 
   const saveSeasonsToLocalStorage = (seasons: Season[]) => {
     if (movie) {
       const updatedMovie = { ...movie, seasonsList: seasons };
       localStorage.setItem(`movie-${movie.id}`, JSON.stringify(updatedMovie));
-
-      //// использовать movies из основного localStarage-а и обновить массив сезонов
     }
   };
 
@@ -114,7 +138,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movies }) => {
   };
 
   useEffect(() => {
-    loadSeasonsFromLocalStorage(); // Загружаем сезоны из LocalStorage при монтировании
+    loadSeasonsFromLocalStorage(); /// Загружаем сезоны из LocalStorage при монтировании
   }, [movie]);
 
   if (!movie) {
@@ -128,7 +152,6 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movies }) => {
 
   return (
     <div className="movie-details">
-      {/* Блок с картинкой, названием и статусом */}
       <div className="movie-header">
         <img src={movie.imageUrl} alt={movie.title} className="movie-image" />
         <div className="movie-info">
@@ -139,7 +162,6 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movies }) => {
         </div>
       </div>
 
-      {/* Форма для добавления сезона и серий */}
       <form onSubmit={handleSubmit} className="season-form">
         <input
           type="number"
@@ -153,7 +175,6 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movies }) => {
         </button>
       </form>
 
-      {/* Отображение сезонов и серий */}
       <div className="seasons-container">
         {seasons.map((season) => (
           <div key={season.id} className="season-block">

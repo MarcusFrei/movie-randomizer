@@ -1,9 +1,8 @@
 import { useMovieManager } from './components/MovieManager/MovieManager';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import MovieComponent from './components/MovieComponent/MovieComponent';
-import MovieForm from './components/MovieForm/MovieForm';
 import RandomMovie from './components/RandomMovie/RandomMovie';
-import Modal from './components/Modal/Modal';
+import MovieFormModal from './components/MovieFormModal/MovieFormModal'; // Updated import
 import MovieDetails from './components/MovieDetails/MovieDetails';
 import NavBar from './components/NavBar/NavBar';
 import './App.css';
@@ -30,19 +29,17 @@ export const App: React.FC = () => {
   return (
     <div className="container">
       <NavBar />
-
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <MovieForm
-          initialMovie={editingMovie}
-          onSubmit={(title, imageUrl, type) =>
-            editingMovie
-              ? updateMovie(editingMovie.id, title, imageUrl, type)
-              : addMovie(title, imageUrl, type)
-          }
-          buttonText={editingMovie ? 'Обновить' : 'Добавить'}
-        />
-      </Modal>
-
+      <MovieFormModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        initialMovie={editingMovie}
+        onSubmit={(title, imageUrl, type) =>
+          editingMovie
+            ? updateMovie(editingMovie.id, title, imageUrl, type)
+            : addMovie(title, imageUrl, type)
+        }
+        buttonText={editingMovie ? 'Обновить' : 'Добавить'}
+      />
       <Routes>
         <Route
           path="/"
@@ -54,7 +51,7 @@ export const App: React.FC = () => {
                 editMovie={editMovie}
                 deleteMovie={deleteMovie}
                 mode="list"
-                onImageClick={handleImageClick} // Передаем onImageClick
+                onImageClick={handleImageClick}
               />
               <div className="button_block">
                 <button
@@ -76,7 +73,7 @@ export const App: React.FC = () => {
               movies={movies}
               toggleWatched={toggleWatched}
               mode="watched"
-              onImageClick={handleImageClick} // Передаем onImageClick
+              onImageClick={handleImageClick}
             />
           }
         />

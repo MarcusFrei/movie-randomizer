@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import './MovieFormModal.css';
 import { Movie } from '../../types';
-import './MovieForm.css';
 
-interface MovieFormProps {
+interface MovieFormModalProps {
+  isOpen: boolean;
+  onClose: () => void;
   initialMovie?: Movie;
   onSubmit: (title: string, imageUrl: string, type: 'movie' | 'series') => void;
   buttonText: string;
@@ -19,7 +21,9 @@ interface FormErrors {
   imageUrl: string;
 }
 
-const MovieForm: React.FC<MovieFormProps> = ({
+const MovieFormModal: React.FC<MovieFormModalProps> = ({
+  isOpen,
+  onClose,
   initialMovie,
   onSubmit,
   buttonText,
@@ -74,50 +78,62 @@ const MovieForm: React.FC<MovieFormProps> = ({
       onSubmit(formState.title, formState.imageUrl, formState.type);
       setFormState({ title: '', imageUrl: '', type: 'movie' });
       setErrors({ title: '', imageUrl: '' });
+      onClose();
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <input
-          type="text"
-          name="title"
-          value={formState.title}
-          onChange={handleChange}
-          placeholder="Название фильма / сериала..."
-        />
-        {errors.title && <p className="error-message">{errors.title}</p>}
-      </div>
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <button className="close-button" onClick={onClose}>
+          ✖
+        </button>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <input
+              type="text"
+              name="title"
+              value={formState.title}
+              onChange={handleChange}
+              placeholder="Название фильма / сериала..."
+            />
+            {errors.title && <p className="error-message">{errors.title}</p>}
+          </div>
 
-      <div>
-        <input
-          type="text"
-          name="imageUrl"
-          value={formState.imageUrl}
-          onChange={handleChange}
-          placeholder="Ссылка на постер"
-        />
-        {errors.imageUrl && <p className="error-message">{errors.imageUrl}</p>}
-      </div>
+          <div>
+            <input
+              type="text"
+              name="imageUrl"
+              value={formState.imageUrl}
+              onChange={handleChange}
+              placeholder="Ссылка на постер"
+            />
+            {errors.imageUrl && (
+              <p className="error-message">{errors.imageUrl}</p>
+            )}
+          </div>
 
-      <div>
-        <select
-          className="type"
-          name="type"
-          value={formState.type}
-          onChange={handleChange}
-        >
-          <option value="movie">Фильм</option>
-          <option value="series">Сериал</option>
-        </select>
-      </div>
+          <div>
+            <select
+              className="type"
+              name="type"
+              value={formState.type}
+              onChange={handleChange}
+            >
+              <option value="movie">Фильм</option>
+              <option value="series">Сериал</option>
+            </select>
+          </div>
 
-      <button type="submit" className="add">
-        {buttonText}
-      </button>
-    </form>
+          <button type="submit" className="add">
+            {buttonText}
+          </button>
+        </form>
+      </div>
+    </div>
   );
 };
 
-export default MovieForm;
+export default MovieFormModal;

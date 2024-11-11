@@ -41,6 +41,12 @@ const MovieComponent: React.FC<MovieComponentProps> = ({
     }
   };
 
+  const handleImageClick = (id: number) => {
+    if (onImageClick) {
+      onImageClick(id);
+    }
+  };
+
   const buttonActions = (movieId: number) =>
     isWatchedMode
       ? [
@@ -71,9 +77,7 @@ const MovieComponent: React.FC<MovieComponentProps> = ({
               key={movie.id}
               movie={movie}
               actions={buttonActions(movie.id)}
-              onImageClick={
-                onImageClick ? () => onImageClick(movie.id) : undefined
-              }
+              onImageClick={() => handleImageClick(movie.id)}
             />
           ))}
         </ul>
