@@ -1,6 +1,8 @@
 import React from 'react';
 import { Movie } from '../../types';
 import MovieCard from '../MovieCard/MovieCard';
+import { useMovieManager } from '../MovieManager/MovieManager';
+import MovieFormModal from '../MovieFormModal/MovieFormModal';
 
 interface MovieComponentProps {
   movies: Movie[];
@@ -12,14 +14,22 @@ interface MovieComponentProps {
 }
 
 const MovieComponent: React.FC<MovieComponentProps> = ({
-  movies,
-  toggleWatched,
-  editMovie,
-  deleteMovie,
   mode,
   onImageClick,
 }) => {
   const isWatchedMode = mode === 'watched';
+
+  const {
+    movies,
+    editingMovie,
+    isModalOpen,
+    addMovie,
+    toggleWatched,
+    editMovie,
+    updateMovie,
+    deleteMovie,
+    setIsModalOpen,
+  } = useMovieManager();
 
   const filteredMovies = isWatchedMode
     ? movies.filter((movie) => movie.watched)
@@ -82,6 +92,17 @@ const MovieComponent: React.FC<MovieComponentProps> = ({
           ))}
         </ul>
       )}
+      <MovieFormModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        initialMovie={editingMovie}
+        onSubmit={(title, imageUrl, type) =>
+          editingMovie
+            ? updateMovie(editingMovie.id, title, imageUrl, type)
+            : addMovie(title, imageUrl, type)
+        }
+        buttonText={editingMovie ? 'Обновить' : 'Добавить'}
+      />
     </div>
   );
 };

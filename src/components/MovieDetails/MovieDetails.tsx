@@ -31,30 +31,6 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movies }) => {
     }
   };
 
-  // const addSeason = (seriesCount: number) => {
-  //   const newSeason: Season = {
-  //     id: seasons.length + 1,
-  //     seriesCount,
-  //     episodes: createSquares(seriesCount),
-  //   };
-  //   const updatedSeasons = [...seasons, newSeason];
-  //   setSeasons(updatedSeasons);
-  //   saveSeasonsToLocalStorage(updatedSeasons);
-  // };
-
-  // const updateSeason = (seasonId: number, seriesCount: number) => {
-  //   const updatedSeasons = seasons.map((season) =>
-  //     season.id === seasonId
-  //       ? { ...season, seriesCount, episodes: createSquares(seriesCount) }
-  //       : season
-  //   );
-  //   setSeasons(updatedSeasons);
-  //   saveSeasonsToLocalStorage(updatedSeasons);
-  //   setEditingSeason(null);
-  // };
-
-  /////
-
   const createOrUpdateSeason = (
     seasonId: number | null,
     seriesCount: number
@@ -133,7 +109,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movies }) => {
         const parsedMovie = JSON.parse(savedMovie);
         setSeasons(parsedMovie.seasonsList || []);
       }
-      /// по хорошему надо избавится от этой штуки
+      /// сделать обращение по индексу + мы добавлем свойсто seasonsList и дальше править
     }
   };
 

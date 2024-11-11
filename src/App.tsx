@@ -2,23 +2,13 @@ import { useMovieManager } from './components/MovieManager/MovieManager';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import MovieComponent from './components/MovieComponent/MovieComponent';
 import RandomMovie from './components/RandomMovie/RandomMovie';
-import MovieFormModal from './components/MovieFormModal/MovieFormModal'; // Updated import
 import MovieDetails from './components/MovieDetails/MovieDetails';
 import NavBar from './components/NavBar/NavBar';
 import './App.css';
 
 export const App: React.FC = () => {
-  const {
-    movies,
-    editingMovie,
-    isModalOpen,
-    addMovie,
-    toggleWatched,
-    editMovie,
-    updateMovie,
-    deleteMovie,
-    setIsModalOpen,
-  } = useMovieManager();
+  const { movies, toggleWatched, editMovie, deleteMovie, setIsModalOpen } =
+    useMovieManager();
 
   const navigate = useNavigate();
 
@@ -29,17 +19,6 @@ export const App: React.FC = () => {
   return (
     <div className="container">
       <NavBar />
-      <MovieFormModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        initialMovie={editingMovie}
-        onSubmit={(title, imageUrl, type) =>
-          editingMovie
-            ? updateMovie(editingMovie.id, title, imageUrl, type)
-            : addMovie(title, imageUrl, type)
-        }
-        buttonText={editingMovie ? 'Обновить' : 'Добавить'}
-      />
       <Routes>
         <Route
           path="/"
