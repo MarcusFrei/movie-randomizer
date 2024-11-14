@@ -16,18 +16,28 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movies }) => {
 
   useEffect(() => {
     if (movie) {
-      const savedMovie = localStorage.getItem(`movie-${movie.id}`);
-      if (savedMovie) {
-        const parsedMovie = JSON.parse(savedMovie);
-        setSeasons(parsedMovie.seasonsList || []);
+      const storedMovies = localStorage.getItem('movies');
+      if (storedMovies) {
+        const parsedMovies: Movie[] = JSON.parse(storedMovies);
+        const currentMovie = parsedMovies.find((m) => m.id === movie.id);
+
+        if (currentMovie && currentMovie.seasonsList) {
+          setSeasons(currentMovie.seasonsList);
+        }
       }
     }
   }, [movie]);
 
   const saveSeasonsToLocalStorage = (updatedSeasons: Season[]) => {
     if (movie) {
-      const updatedMovie = { ...movie, seasonsList: updatedSeasons };
-      localStorage.setItem(`movie-${movie.id}`, JSON.stringify(updatedMovie));
+      const storedMovies = localStorage.getItem('movies');
+      if (storedMovies) {
+        const parsedMovies: Movie[] = JSON.parse(storedMovies);
+        const updatedMovies = parsedMovies.map((m) =>
+          m.id === movie.id ? { ...m, seasonsList: updatedSeasons } : m
+        );
+        localStorage.setItem('movies', JSON.stringify(updatedMovies));
+      }
     }
   };
 
