@@ -1,6 +1,6 @@
 import { useMovieManager } from './components/MovieManager/MovieManager';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import MovieComponent from './components/MovieComponent/MovieComponent';
+import MovieList from './components/MovieList/MovieList';
 import RandomMovie from './components/RandomMovie/RandomMovie';
 import MovieDetails from './components/MovieDetails/MovieDetails';
 import NavBar from './components/NavBar/NavBar';
@@ -24,7 +24,7 @@ export const App: React.FC = () => {
           path="/"
           element={
             <>
-              <MovieComponent
+              <MovieList
                 movies={movies}
                 toggleWatched={toggleWatched}
                 editMovie={editMovie}
@@ -48,7 +48,7 @@ export const App: React.FC = () => {
         <Route
           path="/watched"
           element={
-            <MovieComponent
+            <MovieList
               movies={movies}
               toggleWatched={toggleWatched}
               mode="watched"

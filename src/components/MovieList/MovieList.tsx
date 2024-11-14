@@ -4,7 +4,7 @@ import MovieCard from '../MovieCard/MovieCard';
 import { useMovieManager } from '../MovieManager/MovieManager';
 import MovieFormModal from '../MovieFormModal/MovieFormModal';
 
-interface MovieComponentProps {
+interface MovieListProps {
   movies: Movie[];
   toggleWatched: (id: number) => void;
   editMovie?: (id: number) => void;
@@ -13,10 +13,7 @@ interface MovieComponentProps {
   onImageClick?: (id: number) => void;
 }
 
-const MovieComponent: React.FC<MovieComponentProps> = ({
-  mode,
-  onImageClick,
-}) => {
+const MovieList: React.FC<MovieListProps> = ({ mode, onImageClick }) => {
   const isWatchedMode = mode === 'watched';
 
   const {
@@ -107,7 +104,7 @@ const MovieComponent: React.FC<MovieComponentProps> = ({
   );
 };
 
-export default MovieComponent;
+export default MovieList;
 
 /// Сделать отдельный компонент карточки - сделано!
 /// Типизировать WatchedMovies, а то не сделано! - сделано!
