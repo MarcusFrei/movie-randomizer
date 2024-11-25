@@ -13,6 +13,7 @@ h1 {
   font-size: 45px;
   text-align: center;
   color: #333;
+  margin: 0;
 }
 
 h2 {
@@ -113,4 +114,10 @@ p {
 .season-input {
   height: 30px;
   width: 400px;
+}
+
+.header-block {
+  display: flex;
+  justify-content: space-between;
+  margin: 40px 75px 45px;
 }

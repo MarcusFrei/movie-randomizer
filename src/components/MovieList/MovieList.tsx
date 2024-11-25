@@ -50,12 +50,15 @@ const MovieList: React.FC<MovieListProps> = ({ mode, onImageClick }) => {
 
   return (
     <div>
-      <h1>{isWatchedMode ? 'Просмотренные фильмы' : 'Список фильмов'}</h1>
-      <div className="button_block">
-        <button onClick={() => setIsModalOpen(true)} className="add_button">
-          ➕
-        </button>
+      <div className="header-block">
+        <h1>{isWatchedMode ? 'Просмотренные фильмы' : 'Список фильмов'}</h1>
+        <div className="button_block">
+          <button onClick={() => setIsModalOpen(true)} className="add_button">
+            ➕
+          </button>
+        </div>
       </div>
+
       {filteredMovies.length === 0 ? (
         <p>
           {isWatchedMode
