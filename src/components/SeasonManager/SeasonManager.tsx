@@ -105,6 +105,7 @@ const SeasonsManager: React.FC<SeasonsManagerProps> = ({
           onChange={(e) => setSeriesCount(e.target.value)}
           placeholder="Количество серий"
           required
+          className="season-input"
         />
         <button type="submit">
           {editingSeason ? 'Сохранить' : 'Добавить'}

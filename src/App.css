@@ -109,3 +109,8 @@ p {
   flex-direction: column;
   align-items: center;
 }
+
+.season-input {
+  height: 30px;
+  width: 400px;
+}

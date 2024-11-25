@@ -1,76 +1,61 @@
 import React from 'react';
-import { Movie } from '../../types';
 import MovieCard from '../MovieCard/MovieCard';
 import { useMovieManager } from '../MovieManager/MovieManager';
 import MovieFormModal from '../MovieFormModal/MovieFormModal';
 
 interface MovieListProps {
-  movies: Movie[];
-  toggleWatched: (id: number) => void;
-  editMovie?: (id: number) => void;
-  deleteMovie?: (id: number) => void;
   mode: 'watched' | 'list';
   onImageClick?: (id: number) => void;
 }
 
 const MovieList: React.FC<MovieListProps> = ({ mode, onImageClick }) => {
-  const isWatchedMode = mode === 'watched';
-
   const {
     movies,
     editingMovie,
     isModalOpen,
     addMovie,
     toggleWatched,
-    editMovie,
-    updateMovie,
+    editOrUpdateMovie,
     deleteMovie,
     setIsModalOpen,
   } = useMovieManager();
 
-  const filteredMovies = isWatchedMode
-    ? movies.filter((movie) => movie.watched)
-    : movies.filter((movie) => !movie.watched);
+  const isWatchedMode = mode === 'watched';
 
-  const handleToggleWatched = (id: number) => {
-    toggleWatched(id);
-  };
-
-  const handleEditMovie = (id: number) => {
-    if (editMovie) {
-      editMovie(id);
-    }
-  };
-
-  const handleDeleteMovie = (id: number) => {
-    if (deleteMovie) {
-      deleteMovie(id);
-    }
-  };
+  const filteredMovies = movies.filter((movie) =>
+    isWatchedMode ? movie.watched : !movie.watched
+  );
 
   const handleImageClick = (id: number) => {
-    if (onImageClick) {
-      onImageClick(id);
-    }
+    if (onImageClick) onImageClick(id);
   };
 
-  const buttonActions = (movieId: number) =>
-    isWatchedMode
-      ? [
-          {
-            text: 'Вернуть в список',
-            onClick: () => handleToggleWatched(movieId),
-          },
-        ]
-      : [
-          { text: '👁️', onClick: () => handleToggleWatched(movieId) },
-          { text: '✏️', onClick: () => handleEditMovie(movieId) },
-          { text: '🗑️', onClick: () => handleDeleteMovie(movieId) },
-        ];
+  const buttonActions = (movieId: number) => {
+    const actions = [
+      {
+        text: isWatchedMode ? 'Вернуть в список' : '👁️',
+        onClick: () => toggleWatched(movieId),
+      },
+    ];
+
+    if (!isWatchedMode) {
+      actions.push(
+        { text: '✏️', onClick: () => editOrUpdateMovie(movieId) },
+        { text: '🗑️', onClick: () => deleteMovie(movieId) }
+      );
+    }
+
+    return actions;
+  };
 
   return (
     <div>
-      <h1>{isWatchedMode ? 'Просмотренные фильмы:' : 'Список фильмов:'}</h1>
+      <h1>{isWatchedMode ? 'Просмотренные фильмы' : 'Список фильмов'}</h1>
+      <div className="button_block">
+        <button onClick={() => setIsModalOpen(true)} className="add_button">
+          ➕
+        </button>
+      </div>
       {filteredMovies.length === 0 ? (
         <p>
           {isWatchedMode
@@ -95,7 +80,7 @@ const MovieList: React.FC<MovieListProps> = ({ mode, onImageClick }) => {
         initialMovie={editingMovie}
         onSubmit={(title, imageUrl, type) =>
           editingMovie
-            ? updateMovie(editingMovie.id, title, imageUrl, type)
+            ? editOrUpdateMovie(editingMovie.id, { title, imageUrl, type })
             : addMovie(title, imageUrl, type)
         }
         buttonText={editingMovie ? 'Обновить' : 'Добавить'}

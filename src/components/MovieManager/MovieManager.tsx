@@ -43,28 +43,26 @@ export const useMovieManager = () => {
       )
     );
   };
-
-  const editMovie = (id: number) => {
-    const movie = movies.find((movie) => movie.id === id);
-    if (movie) {
-      setEditingMovie(movie);
-      setIsModalOpen(true);
-    }
-  };
-
-  const updateMovie = (
+  const editOrUpdateMovie = (
     id: number,
-    title: string,
-    imageUrl: string,
-    type: 'movie' | 'series'
+    movieData?: { title: string; imageUrl: string; type: 'movie' | 'series' }
   ) => {
-    setMovies(
-      movies.map((movie) =>
-        movie.id === id ? { ...movie, title, imageUrl, type } : movie
-      )
-    );
-    setEditingMovie(null);
-    setIsModalOpen(false);
+    if (movieData) {
+      const { title, imageUrl, type } = movieData;
+      setMovies(
+        movies.map((movie) =>
+          movie.id === id ? { ...movie, title, imageUrl, type } : movie
+        )
+      );
+      setEditingMovie(null);
+      setIsModalOpen(false);
+    } else {
+      const movie = movies.find((movie) => movie.id === id);
+      if (movie) {
+        setEditingMovie(movie);
+        setIsModalOpen(true);
+      }
+    }
   };
 
   const deleteMovie = (id: number) => {
@@ -77,8 +75,7 @@ export const useMovieManager = () => {
     isModalOpen,
     addMovie,
     toggleWatched,
-    editMovie,
-    updateMovie,
+    editOrUpdateMovie,
     deleteMovie,
     setIsModalOpen,
   };
