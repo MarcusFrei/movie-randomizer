@@ -1,0 +1,10 @@
+.random p span {
+  cursor: pointer;
+  color: rgb(74, 146, 217);
+  text-decoration: underline;
+}
+
+span:hover {
+  color: rgb(65, 120, 175);
+  font-weight: 600;
+}

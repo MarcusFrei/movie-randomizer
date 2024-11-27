@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Season } from '../../types';
 import createSquares from '../../utils/utils';
 import SeasonComponent from '../SeasonComponent/SeasonComponent';
@@ -10,22 +10,17 @@ interface SeasonsManagerProps {
 }
 
 const SeasonsManager: React.FC<SeasonsManagerProps> = ({
-  movieId,
   savedSeasons,
   onUpdate,
 }) => {
   const [seasons, setSeasons] = useState<Season[]>(savedSeasons);
-  const [seriesCount, setSeriesCount] = useState<string>('');
+  const [seriesCount, setSeriesCount] = useState('');
   const [editingSeason, setEditingSeason] = useState<Season | null>(null);
-
-  useEffect(() => {
-    setSeasons(savedSeasons);
-  }, [savedSeasons]);
 
   const createOrUpdateSeason = (
     seasonId: number | null,
     seriesCount: number
-  ) => {
+  ): void => {
     const newSeason: Season = {
       id: seasonId ?? seasons.length + 1,
       seriesCount,
@@ -38,15 +33,11 @@ const SeasonsManager: React.FC<SeasonsManagerProps> = ({
 
     setSeasons(updatedSeasons);
     onUpdate(updatedSeasons);
-    if (seasonId) setEditingSeason(null);
-  };
 
-  const addSeason = (seriesCount: number) => {
-    createOrUpdateSeason(null, seriesCount);
-  };
-
-  const updateSeason = (seasonId: number, seriesCount: number) => {
-    createOrUpdateSeason(seasonId, seriesCount);
+    if (seasonId) {
+      setEditingSeason(null);
+      setSeriesCount('');
+    }
   };
 
   const handleSquareClick = (seasonId: number, squareId: number) => {
@@ -67,37 +58,38 @@ const SeasonsManager: React.FC<SeasonsManagerProps> = ({
     onUpdate(updatedSeasons);
   };
 
+  const handleDeleteSeason = (seasonId: number) => {
+    const updatedSeasons = seasons
+      .filter((season) => season.id !== seasonId)
+      .map((season, index) => ({
+        ...season,
+        id: index + 1,
+      }));
+
+    setSeasons(updatedSeasons);
+    onUpdate(updatedSeasons);
+  };
+
   const handleEditSeason = (season: Season) => {
     setEditingSeason(season);
     setSeriesCount(season.seriesCount.toString());
   };
 
-  const handleDeleteSeason = (seasonId: number) => {
-    const updatedSeasons = seasons.filter((season) => season.id !== seasonId);
-
-    const renumberedSeasons = updatedSeasons.map((season, index) => ({
-      ...season,
-      id: index + 1,
-    }));
-
-    setSeasons(renumberedSeasons);
-    onUpdate(renumberedSeasons);
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const numberOfSquares = parseInt(seriesCount);
-    setSeriesCount('');
+    const numberOfSquares = parseInt(seriesCount, 10);
 
-    if (!!numberOfSquares) {
-      return editingSeason
-        ? updateSeason(editingSeason.id, numberOfSquares)
-        : addSeason(numberOfSquares);
+    if (numberOfSquares > 0) {
+      editingSeason
+        ? createOrUpdateSeason(editingSeason.id, numberOfSquares)
+        : createOrUpdateSeason(null, numberOfSquares);
     }
   };
 
+  const submitButtonText = editingSeason ? 'Сохранить' : 'Добавить';
+
   return (
-    <div>
+    <div className="seasons-manager">
       <form onSubmit={handleSubmit} className="season-form">
         <input
           type="number"
@@ -105,11 +97,10 @@ const SeasonsManager: React.FC<SeasonsManagerProps> = ({
           onChange={(e) => setSeriesCount(e.target.value)}
           placeholder="Количество серий"
           required
+          min="1"
           className="season-input"
         />
-        <button type="submit">
-          {editingSeason ? 'Сохранить' : 'Добавить'}
-        </button>
+        <button type="submit">{submitButtonText}</button>
       </form>
 
       <div className="seasons-container">
@@ -127,4 +118,4 @@ const SeasonsManager: React.FC<SeasonsManagerProps> = ({
   );
 };
 
-export default SeasonsManager;
+export default React.memo(SeasonsManager);

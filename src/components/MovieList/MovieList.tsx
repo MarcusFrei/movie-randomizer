@@ -1,14 +1,9 @@
-import React from 'react';
 import MovieCard from '../MovieCard/MovieCard';
 import { useMovieManager } from '../MovieManager/MovieManager';
 import MovieFormModal from '../MovieFormModal/MovieFormModal';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-interface MovieListProps {
-  mode: 'watched' | 'list';
-  onImageClick?: (id: number) => void;
-}
-
-const MovieList: React.FC<MovieListProps> = ({ mode, onImageClick }) => {
+const MovieList = () => {
   const {
     movies,
     editingMovie,
@@ -20,15 +15,18 @@ const MovieList: React.FC<MovieListProps> = ({ mode, onImageClick }) => {
     setIsModalOpen,
   } = useMovieManager();
 
-  const isWatchedMode = mode === 'watched';
+  const location = useLocation();
+  const { pathname } = location;
+  const isWatchedMode = !(pathname === '/');
+
+  const navigate = useNavigate();
+  const handleImageClick = (id: number) => {
+    navigate(`/movie/${id}`);
+  };
 
   const filteredMovies = movies.filter((movie) =>
     isWatchedMode ? movie.watched : !movie.watched
   );
-
-  const handleImageClick = (id: number) => {
-    if (onImageClick) onImageClick(id);
-  };
 
   const buttonActions = (movieId: number) => {
     const actions = [
@@ -93,17 +91,3 @@ const MovieList: React.FC<MovieListProps> = ({ mode, onImageClick }) => {
 };
 
 export default MovieList;
-
-/// Сделать отдельный компонент карточки - сделано!
-/// Типизировать WatchedMovies, а то не сделано! - сделано!
-/// https://www.typescriptlang.org/docs/handbook/utility-types.html - !!!ЧИТАТЬ ОБЯЗАТЕЛЬНО!!!
-/// Избавится от повторов айдишников - сделано!
-/// Комментарии в самом коде, что исправил и тд
-/// Убрать лямбды строчка 44 (onClick) - сделано!
-/// Объединить компоненты watchedMovies и MovieList - сделано!
-/// Закинуть в отдельную урлу рандомный фильм - сделано!
-/// Кнопки карточек сделать иконами, а не буковками, не в столбик, а в ряд - сделано, хоть и ненмого иначе!
-/// Кнопку добавить опустить под список, а инпуты перенети в модалку, тоже самое с редактированием - сделано!
-/// сделать папочку pages, куда передаются отдельно все странички
-/// Вы не знаете JS - почитать
-/// MofieForm - продолжение банкета

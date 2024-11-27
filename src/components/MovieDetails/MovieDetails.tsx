@@ -1,32 +1,14 @@
-import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Movie, Season } from '../../types';
 import SeasonsManager from '../SeasonManager/SeasonManager';
+import { useMovieManager } from '../MovieManager/MovieManager';
 import './MovieDetails.css';
 
-interface MovieDetailsProps {
-  movies: Movie[];
-}
-
-const MovieDetails: React.FC<MovieDetailsProps> = ({ movies }) => {
+const MovieDetails = () => {
   const { id } = useParams<{ id: string }>();
   const movieId = Number(id);
+  const { movies } = useMovieManager();
   const movie = movies.find((m) => m.id === movieId);
-  const [seasons, setSeasons] = useState<Season[]>([]);
-
-  useEffect(() => {
-    if (movie) {
-      const storedMovies = localStorage.getItem('movies');
-      if (storedMovies) {
-        const parsedMovies: Movie[] = JSON.parse(storedMovies);
-        const currentMovie = parsedMovies.find((m) => m.id === movie.id);
-
-        if (currentMovie && currentMovie.seasonsList) {
-          setSeasons(currentMovie.seasonsList);
-        }
-      }
-    }
-  }, [movie]);
 
   const saveSeasonsToLocalStorage = (updatedSeasons: Season[]) => {
     if (movie) {
@@ -64,7 +46,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movies }) => {
 
       <SeasonsManager
         movieId={movieId}
-        savedSeasons={seasons}
+        savedSeasons={movie.seasonsList ?? []}
         onUpdate={saveSeasonsToLocalStorage}
       />
     </div>
