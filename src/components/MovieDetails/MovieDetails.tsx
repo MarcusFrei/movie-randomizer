@@ -1,14 +1,22 @@
 import { useParams } from 'react-router-dom';
 import { Movie, Season } from '../../types';
 import SeasonsManager from '../SeasonManager/SeasonManager';
-import { useMovieManager } from '../MovieManager/MovieManager';
 import './MovieDetails.css';
 
 const MovieDetails = () => {
   const { id } = useParams<{ id: string }>();
   const movieId = Number(id);
-  const { movies } = useMovieManager();
-  const movie = movies.find((m) => m.id === movieId);
+
+  const getMovieFromLocalStorage = (movieId: number): Movie | undefined => {
+    const storedMovies = localStorage.getItem('movies');
+    if (storedMovies) {
+      const movies: Movie[] = JSON.parse(storedMovies);
+      return movies.find((m) => m.id === movieId);
+    }
+    return undefined;
+  };
+
+  const movie = getMovieFromLocalStorage(movieId);
 
   const saveSeasonsToLocalStorage = (updatedSeasons: Season[]) => {
     if (movie) {
@@ -26,7 +34,7 @@ const MovieDetails = () => {
   if (!movie) {
     return (
       <div>
-        Фильм не найден, понятия не имею как так вышло и удивлён, что вообще
+        Фильм не найден, понятия не имею, как так вышло, и удивлён, что вообще
         видишь это сообщение!
       </div>
     );
