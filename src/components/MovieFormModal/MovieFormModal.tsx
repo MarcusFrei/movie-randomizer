@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './MovieFormModal.css';
 import { Movie } from '../../types';
 
@@ -8,12 +8,6 @@ interface MovieFormModalProps {
   initialMovie?: Movie;
   onSubmit: (title: string, imageUrl: string, type: 'movie' | 'series') => void;
   buttonText: string;
-}
-
-interface FormState {
-  title: string;
-  imageUrl: string;
-  type: 'movie' | 'series';
 }
 
 interface FormErrors {
@@ -28,26 +22,18 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
   onSubmit,
   buttonText,
 }) => {
-  const [formState, setFormState] = useState<FormState>({
+  const [formState, setFormState] = useState<Movie>({
     title: initialMovie?.title || '',
     imageUrl: initialMovie?.imageUrl || '',
     type: initialMovie?.type || 'movie',
+    watched: initialMovie?.watched || false,
+    id: initialMovie?.id || 0,
   });
 
   const [errors, setErrors] = useState<FormErrors>({
     title: '',
     imageUrl: '',
   });
-
-  useEffect(() => {
-    if (initialMovie) {
-      setFormState({
-        title: initialMovie.title,
-        imageUrl: initialMovie.imageUrl,
-        type: initialMovie.type,
-      });
-    }
-  }, [initialMovie]);
 
   const validateForm = () => {
     const newErrors: FormErrors = { title: '', imageUrl: '' };
@@ -137,3 +123,9 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
 };
 
 export default MovieFormModal;
+
+/// Добавить ещё одно поле с чекбоксом просмотрено или нет, а фильм или сериал сделать радиокнопкой
+/// Нам нужно формапи в тг есть ссылка в чатике, чтобы избавится от стейтов, надо чтобы компонент снаружи принимал 3 пропса:
+/// открыто (меняем на id), handleClose, handleSubmit (на вход принимает весь фильм)
+/// Избавиться от стейта formState и от ошибок, лучше использовать require + invalid
+///

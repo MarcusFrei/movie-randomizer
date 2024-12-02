@@ -5,16 +5,10 @@ import MovieFormModal from '../MovieFormModal/MovieFormModal';
 import { Movie } from '../../types';
 
 const MovieList: React.FC = () => {
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const storedMovies = localStorage.getItem('movies') ?? '';
+  const [movies, setMovies] = useState<Movie[]>(JSON.parse(storedMovies) ?? []);
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  useEffect(() => {
-    const storedMovies = localStorage.getItem('movies');
-    if (storedMovies) {
-      setMovies(JSON.parse(storedMovies));
-    }
-  }, []);
 
   useEffect(() => {
     if (movies.length > 0) {
