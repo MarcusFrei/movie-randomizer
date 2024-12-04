@@ -16,19 +16,10 @@ const MovieList: React.FC = () => {
     }
   }, [movies]);
 
-  const addMovie = (
-    title: string,
-    imageUrl: string,
-    type: 'movie' | 'series',
-    watched: boolean
-  ) => {
+  const addMovie = (movie: Omit<Movie, 'id'>) => {
     const newMovie: Movie = {
       id: movies.length + 1,
-      title,
-      imageUrl,
-      type,
-      watched,
-      seasons: type === 'series' ? [] : undefined,
+      ...movie,
     };
     setMovies([...movies, newMovie]);
     setIsModalOpen(false);
@@ -42,31 +33,14 @@ const MovieList: React.FC = () => {
     );
   };
 
-  const editOrUpdateMovie = (
-    id: number,
-    movieData?: {
-      title: string;
-      imageUrl: string;
-      type: 'movie' | 'series';
-      watched: boolean;
-    }
-  ) => {
-    if (movieData) {
-      const { title, imageUrl, type, watched } = movieData;
-      setMovies(
-        movies.map((movie) =>
-          movie.id === id ? { ...movie, title, imageUrl, type, watched } : movie
-        )
-      );
-      setEditingMovie(null);
-      setIsModalOpen(false);
-    } else {
-      const movie = movies.find((movie) => movie.id === id);
-      if (movie) {
-        setEditingMovie(movie);
-        setIsModalOpen(true);
-      }
-    }
+  const editOrUpdateMovie = (id: number, movieData: Omit<Movie, 'id'>) => {
+    setMovies(
+      movies.map((movie) =>
+        movie.id === id ? { ...movie, ...movieData } : movie
+      )
+    );
+    setEditingMovie(null);
+    setIsModalOpen(false);
   };
 
   const deleteMovie = (id: number) => {
@@ -96,7 +70,16 @@ const MovieList: React.FC = () => {
 
     if (!isWatchedMode) {
       actions.push(
-        { text: '✏️', onClick: () => editOrUpdateMovie(movieId) },
+        {
+          text: '✏️',
+          onClick: () => {
+            const movie = movies.find((movie) => movie.id === movieId);
+            if (movie) {
+              setEditingMovie(movie);
+              setIsModalOpen(true);
+            }
+          },
+        },
         { text: '🗑️', onClick: () => deleteMovie(movieId) }
       );
     }
@@ -133,19 +116,15 @@ const MovieList: React.FC = () => {
           ))}
         </ul>
       )}
+
       <MovieFormModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         initialMovie={editingMovie}
-        onSubmit={(title, imageUrl, type, watched) =>
+        onSubmit={(movieData) =>
           editingMovie
-            ? editOrUpdateMovie(editingMovie.id, {
-                title,
-                imageUrl,
-                type,
-                watched,
-              })
-            : addMovie(title, imageUrl, type, watched)
+            ? editOrUpdateMovie(editingMovie.id, movieData)
+            : addMovie(movieData)
         }
         buttonText={editingMovie ? 'Обновить' : 'Добавить'}
       />

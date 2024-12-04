@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './MovieFormModal.css';
 import { Movie } from '../../types';
 
@@ -6,12 +6,7 @@ interface MovieFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialMovie?: Movie;
-  onSubmit: (
-    title: string,
-    imageUrl: string,
-    type: 'movie' | 'series',
-    watched: boolean
-  ) => void;
+  onSubmit: (movie: Omit<Movie, 'id'>) => void;
   buttonText: string;
 }
 
@@ -22,20 +17,29 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
   onSubmit,
   buttonText,
 }) => {
-  const [title, setTitle] = useState(initialMovie?.title || '');
-  const [imageUrl, setImageUrl] = useState(initialMovie?.imageUrl || '');
-  const [type, setType] = useState<'movie' | 'series'>(
-    initialMovie?.type || 'movie'
-  );
-  const [watched, setWatched] = useState(initialMovie?.watched || false);
+  const [formData, setFormData] = useState<Omit<Movie, 'id'>>({
+    title: '',
+    imageUrl: '',
+    type: 'movie',
+    watched: false,
+  });
+
+  /// Сломал прошлым коммитом форму редактирования
+
+  useEffect(() => {
+    if (initialMovie) {
+      setFormData({
+        title: initialMovie.title,
+        imageUrl: initialMovie.imageUrl,
+        type: initialMovie.type,
+        watched: initialMovie.watched,
+      });
+    }
+  }, [initialMovie]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSubmit(title, imageUrl, type, watched);
-    setTitle('');
-    setImageUrl('');
-    setType('movie');
-    setWatched(false);
+    onSubmit(formData);
     onClose();
   };
 
@@ -52,8 +56,10 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
             <input
               type="text"
               name="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={formData.title}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
               placeholder="Название фильма / сериала..."
               required
             />
@@ -63,8 +69,10 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
             <input
               type="text"
               name="imageUrl"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
+              value={formData.imageUrl}
+              onChange={(e) =>
+                setFormData({ ...formData, imageUrl: e.target.value })
+              }
               placeholder="Ссылка на постер"
               required
             />
@@ -76,8 +84,8 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
                 type="radio"
                 name="type"
                 value="movie"
-                checked={type === 'movie'}
-                onChange={() => setType('movie')}
+                checked={formData.type === 'movie'}
+                onChange={() => setFormData({ ...formData, type: 'movie' })}
               />
               Фильм
             </label>
@@ -86,8 +94,8 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
                 type="radio"
                 name="type"
                 value="series"
-                checked={type === 'series'}
-                onChange={() => setType('series')}
+                checked={formData.type === 'series'}
+                onChange={() => setFormData({ ...formData, type: 'series' })}
               />
               Сериал
             </label>
@@ -97,8 +105,10 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
             <label>
               <input
                 type="checkbox"
-                checked={watched}
-                onChange={(e) => setWatched(e.target.checked)}
+                checked={formData.watched}
+                onChange={(e) =>
+                  setFormData({ ...formData, watched: e.target.checked })
+                }
               />
               Просмотрено
             </label>
