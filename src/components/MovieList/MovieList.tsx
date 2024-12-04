@@ -87,12 +87,17 @@ const MovieList: React.FC = () => {
     return actions;
   };
 
+  const openAddMovieModal = () => {
+    setEditingMovie(null);
+    setIsModalOpen(true);
+  };
+
   return (
     <div>
       <div className="header-block">
         <h1>{isWatchedMode ? 'Просмотренные фильмы' : 'Список фильмов'}</h1>
         <div className="button_block">
-          <button onClick={() => setIsModalOpen(true)} className="add_button">
+          <button onClick={openAddMovieModal} className="add_button">
             ➕
           </button>
         </div>

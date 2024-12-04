@@ -34,8 +34,16 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
         type: initialMovie.type,
         watched: initialMovie.watched,
       });
+    } else {
+      /// Если это новое добавление, тов форме передаются пустые значения
+      setFormData({
+        title: '',
+        imageUrl: '',
+        type: 'movie',
+        watched: false,
+      });
     }
-  }, [initialMovie]);
+  }, [initialMovie, isOpen]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
