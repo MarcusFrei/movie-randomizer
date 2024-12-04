@@ -19,14 +19,15 @@ const MovieList: React.FC = () => {
   const addMovie = (
     title: string,
     imageUrl: string,
-    type: 'movie' | 'series'
+    type: 'movie' | 'series',
+    watched: boolean
   ) => {
     const newMovie: Movie = {
       id: movies.length + 1,
       title,
       imageUrl,
-      watched: false,
       type,
+      watched,
       seasons: type === 'series' ? [] : undefined,
     };
     setMovies([...movies, newMovie]);
@@ -43,13 +44,18 @@ const MovieList: React.FC = () => {
 
   const editOrUpdateMovie = (
     id: number,
-    movieData?: { title: string; imageUrl: string; type: 'movie' | 'series' }
+    movieData?: {
+      title: string;
+      imageUrl: string;
+      type: 'movie' | 'series';
+      watched: boolean;
+    }
   ) => {
     if (movieData) {
-      const { title, imageUrl, type } = movieData;
+      const { title, imageUrl, type, watched } = movieData;
       setMovies(
         movies.map((movie) =>
-          movie.id === id ? { ...movie, title, imageUrl, type } : movie
+          movie.id === id ? { ...movie, title, imageUrl, type, watched } : movie
         )
       );
       setEditingMovie(null);
@@ -131,10 +137,15 @@ const MovieList: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         initialMovie={editingMovie}
-        onSubmit={(title, imageUrl, type) =>
+        onSubmit={(title, imageUrl, type, watched) =>
           editingMovie
-            ? editOrUpdateMovie(editingMovie.id, { title, imageUrl, type })
-            : addMovie(title, imageUrl, type)
+            ? editOrUpdateMovie(editingMovie.id, {
+                title,
+                imageUrl,
+                type,
+                watched,
+              })
+            : addMovie(title, imageUrl, type, watched)
         }
         buttonText={editingMovie ? 'Обновить' : 'Добавить'}
       />
