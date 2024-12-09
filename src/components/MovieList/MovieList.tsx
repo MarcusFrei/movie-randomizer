@@ -1,64 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import MovieCard from '../MovieCard/MovieCard';
 import MovieFormModal from '../MovieFormModal/MovieFormModal';
+import { useMovieManagement } from '../useMovieManagement/useMovieManagement';
 import { Movie } from '../../types';
 
 const MovieList: React.FC = () => {
-  const storedMovies = localStorage.getItem('movies') ?? '';
-  const [movies, setMovies] = useState<Movie[]>(JSON.parse(storedMovies) ?? []);
+  const {
+    movies,
+    addMovie,
+    toggleWatched,
+    editMovie,
+    deleteMovie,
+    getMovieById,
+    filterMovies,
+  } = useMovieManagement();
+
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    if (movies.length > 0) {
-      localStorage.setItem('movies', JSON.stringify(movies));
-    }
-  }, [movies]);
-
-  const addMovie = (movie: Omit<Movie, 'id'>) => {
-    const newMovie: Movie = {
-      id: movies.length + 1,
-      ...movie,
-    };
-    setMovies([...movies, newMovie]);
-    setIsModalOpen(false);
-  };
-
-  const toggleWatched = (id: number) => {
-    setMovies(
-      movies.map((movie) =>
-        movie.id === id ? { ...movie, watched: !movie.watched } : movie
-      )
-    );
-  };
-
-  const editOrUpdateMovie = (id: number, movieData: Omit<Movie, 'id'>) => {
-    setMovies(
-      movies.map((movie) =>
-        movie.id === id ? { ...movie, ...movieData } : movie
-      )
-    );
-    setEditingMovie(null);
-    setIsModalOpen(false);
-  };
-
-  const deleteMovie = (id: number) => {
-    setMovies(movies.filter((movie) => movie.id !== id));
-  };
-
   const location = useLocation();
-  const { pathname } = location;
-  const isWatchedMode = !(pathname === '/');
-
   const navigate = useNavigate();
+  const isWatchedMode = !(location.pathname === '/');
+
   const handleImageClick = (id: number) => {
     navigate(`/movie/${id}`);
   };
-
-  const filteredMovies = movies.filter((movie) =>
-    isWatchedMode ? movie.watched : !movie.watched
-  );
 
   const buttonActions = (movieId: number) => {
     const actions = [
@@ -73,14 +40,17 @@ const MovieList: React.FC = () => {
         {
           text: '✏️',
           onClick: () => {
-            const movie = movies.find((movie) => movie.id === movieId);
+            const movie = getMovieById(movieId);
             if (movie) {
               setEditingMovie(movie);
               setIsModalOpen(true);
             }
           },
         },
-        { text: '🗑️', onClick: () => deleteMovie(movieId) }
+        {
+          text: '🗑️',
+          onClick: () => deleteMovie(movieId),
+        }
       );
     }
 
@@ -91,6 +61,18 @@ const MovieList: React.FC = () => {
     setEditingMovie(null);
     setIsModalOpen(true);
   };
+
+  const handleSubmit = (movieData: Omit<Movie, 'id'>) => {
+    if (editingMovie) {
+      editMovie(editingMovie.id, movieData);
+    } else {
+      addMovie(movieData);
+    }
+    setIsModalOpen(false);
+    setEditingMovie(null);
+  };
+
+  const filteredMovies = filterMovies(isWatchedMode);
 
   return (
     <div>
@@ -126,12 +108,7 @@ const MovieList: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         initialMovie={editingMovie}
-        onSubmit={(movieData) =>
-          editingMovie
-            ? editOrUpdateMovie(editingMovie.id, movieData)
-            : addMovie(movieData)
-        }
-        buttonText={editingMovie ? 'Обновить' : 'Добавить'}
+        onSubmit={handleSubmit}
       />
     </div>
   );

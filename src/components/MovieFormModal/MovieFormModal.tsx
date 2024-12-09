@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import './MovieFormModal.css';
 import { Movie } from '../../types';
 
@@ -15,39 +14,19 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
   onClose,
   initialMovie,
   onSubmit,
-  buttonText,
 }) => {
-  const [formData, setFormData] = useState<Omit<Movie, 'id'>>({
-    title: '',
-    imageUrl: '',
-    type: 'movie',
-    watched: false,
-  });
-
-  /// Сломал прошлым коммитом форму редактирования
-
-  useEffect(() => {
-    if (initialMovie) {
-      setFormData({
-        title: initialMovie.title,
-        imageUrl: initialMovie.imageUrl,
-        type: initialMovie.type,
-        watched: initialMovie.watched,
-      });
-    } else {
-      /// Если это новое добавление, тов форме передаются пустые значения
-      setFormData({
-        title: '',
-        imageUrl: '',
-        type: 'movie',
-        watched: false,
-      });
-    }
-  }, [initialMovie, isOpen]);
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSubmit(formData);
+    const formData = new FormData(e.currentTarget);
+
+    const movie: Omit<Movie, 'id'> = {
+      title: formData.get('title') as string,
+      imageUrl: formData.get('imageUrl') as string,
+      type: formData.get('type') as 'movie' | 'series',
+      watched: formData.has('watched'),
+    };
+
+    onSubmit(movie);
     onClose();
   };
 
@@ -59,17 +38,14 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
         <button className="close-button" onClick={onClose}>
           ✖
         </button>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} id="filmInfo">
           <div>
             <input
               type="text"
               name="title"
-              value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
               placeholder="Название фильма / сериала..."
               required
+              defaultValue={initialMovie?.title}
             />
           </div>
 
@@ -77,12 +53,9 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
             <input
               type="text"
               name="imageUrl"
-              value={formData.imageUrl}
-              onChange={(e) =>
-                setFormData({ ...formData, imageUrl: e.target.value })
-              }
               placeholder="Ссылка на постер"
               required
+              defaultValue={initialMovie?.imageUrl}
             />
           </div>
 
@@ -92,8 +65,7 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
                 type="radio"
                 name="type"
                 value="movie"
-                checked={formData.type === 'movie'}
-                onChange={() => setFormData({ ...formData, type: 'movie' })}
+                defaultChecked={initialMovie?.type === 'movie'}
               />
               Фильм
             </label>
@@ -102,8 +74,7 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
                 type="radio"
                 name="type"
                 value="series"
-                checked={formData.type === 'series'}
-                onChange={() => setFormData({ ...formData, type: 'series' })}
+                defaultChecked={initialMovie?.type === 'series'}
               />
               Сериал
             </label>
@@ -113,17 +84,15 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
             <label>
               <input
                 type="checkbox"
-                checked={formData.watched}
-                onChange={(e) =>
-                  setFormData({ ...formData, watched: e.target.checked })
-                }
+                name="watched"
+                defaultChecked={initialMovie?.watched}
               />
               Просмотрено
             </label>
           </div>
 
           <button type="submit" className="add">
-            {buttonText}
+            {initialMovie ? 'Обновить' : 'Добавить'}
           </button>
         </form>
       </div>
@@ -132,11 +101,3 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
 };
 
 export default MovieFormModal;
-
-// Добавить ещё одно поле с чекбоксом просмотрено или нет, а фильм или сериал сделать радиокнопкой
-// Нам нужно формапи в тг есть ссылка в чатике, чтобы избавится от стейтов, надо чтобы компонент снаружи принимал 3 пропса:
-// открыто (меняем на id),
-// handleClose,
-// handleSubmit (на вход принимает весь фильм)
-// Избавиться от стейта formState и от ошибок, лучше использовать require + invalid
-//
