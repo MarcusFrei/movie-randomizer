@@ -1,17 +1,49 @@
+import { useNavigate } from 'react-router';
 import { Movie } from '../../types';
 import './MovieCard.css';
 
 interface MovieCardProps {
   movie: Movie;
   actions: { text: string; onClick: (id: number) => void }[];
-  onImageClick: (movie: Movie) => void;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({
-  movie,
-  actions,
-  onImageClick,
-}) => {
+const MovieCard: React.FC<MovieCardProps> = ({ movie, actions }) => {
+  const navigate = useNavigate();
+
+  const handleImageClick = () => {
+    navigate(`/movie/${movie.id}`);
+  };
+
+  const buttonActions = (movieId: number) => {
+    const actions = [
+      {
+        text: isWatchedMode ? 'Вернуть в список' : '👁️',
+        onClick: () => toggleWatched(movieId),
+      },
+    ];
+
+    if (!isWatchedMode) {
+      actions.push(
+        {
+          text: '✏️',
+          onClick: () => {
+            const movie = getMovieById(movieId);
+            if (movie) {
+              setEditingMovie(movie);
+              setIsModalOpen(true);
+            }
+          },
+        },
+        {
+          text: '🗑️',
+          onClick: () => deleteMovie(movieId),
+        }
+      );
+    }
+
+    return actions;
+  };
+
   return (
     <li className={`${movie.watched ? 'watched' : ''} card_li`}>
       <p>{movie.title}</p>
@@ -19,7 +51,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
         <img
           src={movie.imageUrl}
           alt={movie.title}
-          onClick={() => onImageClick(movie)}
+          onClick={handleImageClick}
         />
       )}
       <div className="card_buttons">

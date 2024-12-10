@@ -19,6 +19,8 @@ export const useMovieManagement = () => {
     setMovies((prevMovies) => [...prevMovies, newMovie]);
   };
 
+  //// объединить в 1 функцию - перенести его потом в MovieCard и починить всё, что сломано, а именно всё
+
   const toggleWatched = (id: number): void => {
     setMovies((prevMovies) =>
       prevMovies.map((movie) =>
@@ -27,7 +29,7 @@ export const useMovieManagement = () => {
     );
   };
 
-  const editMovie = (id: number, movieData: Omit<Movie, 'id'>): void => {
+  const editMovie = (id: number, movieData: Movie): void => {
     setMovies((prevMovies) =>
       prevMovies.map((movie) =>
         movie.id === id ? { ...movie, ...movieData } : movie
@@ -35,10 +37,13 @@ export const useMovieManagement = () => {
     );
   };
 
+  //////
+
   const deleteMovie = (id: number): void => {
     setMovies((prevMovies) => prevMovies.filter((movie) => movie.id !== id));
   };
 
+  /// перенести utils
   const getMovieById = (id: number): Movie | undefined => {
     return movies.find((movie) => movie.id === id);
   };
@@ -48,6 +53,7 @@ export const useMovieManagement = () => {
       isWatchedMode ? movie.watched : !movie.watched
     );
   };
+  ////
 
   return {
     movies,

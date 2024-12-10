@@ -64,8 +64,10 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
               <input
                 type="radio"
                 name="type"
-                value="movie"
-                defaultChecked={initialMovie?.type === 'movie'}
+                defaultValue="movie"
+                defaultChecked={
+                  initialMovie ? initialMovie?.type === 'movie' : true
+                }
               />
               Фильм
             </label>
@@ -73,7 +75,7 @@ const MovieFormModal: React.FC<MovieFormModalProps> = ({
               <input
                 type="radio"
                 name="type"
-                value="series"
+                defaultValue="series"
                 defaultChecked={initialMovie?.type === 'series'}
               />
               Сериал

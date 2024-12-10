@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import MovieCard from '../MovieCard/MovieCard';
 import MovieFormModal from '../MovieFormModal/MovieFormModal';
 import { useMovieManagement } from '../useMovieManagement/useMovieManagement';
@@ -20,42 +20,10 @@ const MovieList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const location = useLocation();
-  const navigate = useNavigate();
+
   const isWatchedMode = !(location.pathname === '/');
 
-  const handleImageClick = (id: number) => {
-    navigate(`/movie/${id}`);
-  };
-
-  const buttonActions = (movieId: number) => {
-    const actions = [
-      {
-        text: isWatchedMode ? 'Вернуть в список' : '👁️',
-        onClick: () => toggleWatched(movieId),
-      },
-    ];
-
-    if (!isWatchedMode) {
-      actions.push(
-        {
-          text: '✏️',
-          onClick: () => {
-            const movie = getMovieById(movieId);
-            if (movie) {
-              setEditingMovie(movie);
-              setIsModalOpen(true);
-            }
-          },
-        },
-        {
-          text: '🗑️',
-          onClick: () => deleteMovie(movieId),
-        }
-      );
-    }
-
-    return actions;
-  };
+  // const toggleModal =
 
   const openAddMovieModal = () => {
     setEditingMovie(null);
@@ -98,7 +66,6 @@ const MovieList: React.FC = () => {
               key={movie.id}
               movie={movie}
               actions={buttonActions(movie.id)}
-              onImageClick={() => handleImageClick(movie.id)}
             />
           ))}
         </ul>
