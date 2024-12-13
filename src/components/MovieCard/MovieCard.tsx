@@ -1,48 +1,59 @@
+import React from 'react';
 import { useNavigate } from 'react-router';
 import { Movie } from '../../types';
 import './MovieCard.css';
 
 interface MovieCardProps {
   movie: Movie;
-  actions: { text: string; onClick: (id: number) => void }[];
+  isWatchedMode: boolean;
+  updateMovie: (id: number, updates: Partial<Movie>) => void;
+  deleteMovie: (id: number) => void;
+  onEdit?: (movie: Movie) => void;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ movie, actions }) => {
+const MovieCard: React.FC<MovieCardProps> = ({
+  movie,
+  isWatchedMode,
+  updateMovie,
+  deleteMovie,
+  onEdit,
+}) => {
   const navigate = useNavigate();
 
   const handleImageClick = () => {
     navigate(`/movie/${movie.id}`);
   };
 
-  const buttonActions = (movieId: number) => {
-    const actions = [
-      {
-        text: isWatchedMode ? 'Вернуть в список' : '👁️',
-        onClick: () => toggleWatched(movieId),
-      },
-    ];
-
-    if (!isWatchedMode) {
-      actions.push(
-        {
-          text: '✏️',
-          onClick: () => {
-            const movie = getMovieById(movieId);
-            if (movie) {
-              setEditingMovie(movie);
-              setIsModalOpen(true);
-            }
-          },
-        },
-        {
-          text: '🗑️',
-          onClick: () => deleteMovie(movieId),
-        }
-      );
-    }
-
-    return actions;
+  const toggleWatched = () => {
+    updateMovie(movie.id, { watched: !movie.watched });
   };
+
+  const handleEdit = () => {
+    onEdit?.(movie);
+  };
+
+  const handleDelete = () => {
+    deleteMovie(movie.id);
+  };
+
+  const buttonActions = [
+    {
+      text: isWatchedMode ? 'Вернуть в список' : '👁️',
+      onClick: toggleWatched,
+    },
+    ...(!isWatchedMode
+      ? [
+          {
+            text: '✏️',
+            onClick: handleEdit,
+          },
+          {
+            text: '🗑️',
+            onClick: handleDelete,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <li className={`${movie.watched ? 'watched' : ''} card_li`}>
@@ -55,13 +66,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, actions }) => {
         />
       )}
       <div className="card_buttons">
-        {actions.map(({ text }) => (
-          <button
-            key={text}
-            onClick={() =>
-              actions.find((action) => action.text === text)?.onClick(movie.id)
-            }
-          >
+        {buttonActions.map(({ text, onClick }) => (
+          <button key={text} onClick={onClick}>
             {text}
           </button>
         ))}
@@ -71,7 +77,3 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, actions }) => {
 };
 
 export default MovieCard;
-
-/// Вынес отдельный компонент карточки, чтобы его можно было удобно внедрять, если проект будет расширяться и добавляться новые вкладки,
-/// это позволит каждый раз не рисовать каждый раз карточку по новой
-/// findAction - исправить типизацию

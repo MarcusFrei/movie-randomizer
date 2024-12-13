@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import MovieCard from '../MovieCard/MovieCard';
 import MovieFormModal from '../MovieFormModal/MovieFormModal';
@@ -6,15 +6,8 @@ import { useMovieManagement } from '../useMovieManagement/useMovieManagement';
 import { Movie } from '../../types';
 
 const MovieList: React.FC = () => {
-  const {
-    movies,
-    addMovie,
-    toggleWatched,
-    editMovie,
-    deleteMovie,
-    getMovieById,
-    filterMovies,
-  } = useMovieManagement();
+  const { movies, setMovies, addMovie, updateMovie, filterMovies } =
+    useMovieManagement();
 
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,8 +16,6 @@ const MovieList: React.FC = () => {
 
   const isWatchedMode = !(location.pathname === '/');
 
-  // const toggleModal =
-
   const openAddMovieModal = () => {
     setEditingMovie(null);
     setIsModalOpen(true);
@@ -32,12 +23,21 @@ const MovieList: React.FC = () => {
 
   const handleSubmit = (movieData: Omit<Movie, 'id'>) => {
     if (editingMovie) {
-      editMovie(editingMovie.id, movieData);
+      updateMovie(editingMovie.id, movieData);
     } else {
       addMovie(movieData);
     }
     setIsModalOpen(false);
     setEditingMovie(null);
+  };
+
+  const handleDeleteMovie = (id: number) => {
+    setMovies((prevMovies) => prevMovies.filter((movie) => movie.id !== id));
+  };
+
+  const handleEditMovie = (movie: Movie) => {
+    setEditingMovie(movie);
+    setIsModalOpen(true);
   };
 
   const filteredMovies = filterMovies(isWatchedMode);
@@ -65,7 +65,10 @@ const MovieList: React.FC = () => {
             <MovieCard
               key={movie.id}
               movie={movie}
-              actions={buttonActions(movie.id)}
+              isWatchedMode={isWatchedMode}
+              updateMovie={updateMovie}
+              deleteMovie={handleDeleteMovie}
+              onEdit={handleEditMovie}
             />
           ))}
         </ul>
